@@ -29,7 +29,7 @@ public class BleRqLogger {
     }
 
     public BleRqLogger() {
-        tag = String.valueOf(hashCode());
+        tag = "BLE_RQ_" + hashCode();
     }
 
     public void info(String msg, Object... args) {

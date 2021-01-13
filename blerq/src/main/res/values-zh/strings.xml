@@ -5,4 +5,7 @@
     <string name="blerq_device_not_support">当前设备不支持ble蓝牙</string>
     <string name="blerq_not_found_context">没有找到Context</string>
     <string name="blerq_must_set_scan_callback">必须设置蓝牙扫描回调</string>
+    <string name="blerq_device_no_permission">没有蓝牙操作权限</string>
+    <string name="blerq_permissions_must_greater_0">要申请的权限数量必须大于0个</string>
+    <string name="blerq_device_not_open">蓝牙未打开</string>
 </resources>

@@ -2,6 +2,8 @@ package com.gloomyer.blerq.callback;
 
 import android.bluetooth.le.ScanResult;
 
+import androidx.annotation.NonNull;
+
 import com.gloomyer.blerq.code.BleRqError;
 
 /**
@@ -16,14 +18,14 @@ public interface BleRqScanCallback {
      * @param device 设备
      * @return 返回true表示就是这个设备 false表示不是
      */
-    boolean isNeedConnDevice(ScanResult device);
+    boolean isNeedConnDevice(@NonNull ScanResult device);
 
     /**
      * 当连接发生了错误
      *
      * @param error 错误
      */
-    void onError(BleRqError error);
+    void onError(@NonNull BleRqError error);
 
     /**
      * 当成功连接设备 此方法调用之后表示可以开始发送数据了
