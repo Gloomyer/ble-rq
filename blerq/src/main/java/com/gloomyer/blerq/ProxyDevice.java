@@ -35,6 +35,7 @@ class ProxyDevice {
         this.context = context;
         BlerqGattCallback blerqGattCallback = new BlerqGattCallback(logger);
         bluetoothGatt = device.connectGatt(context, true, blerqGattCallback);
+        logger.setDeviceAddress(device.getAddress());
     }
 
     public void close() {

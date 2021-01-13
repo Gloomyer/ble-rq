@@ -1,6 +1,7 @@
 package com.gloomyer.blerq.code;
 
 import com.gloomyer.blerq.R;
+import com.gloomyer.blerq.utils.ContextUtils;
 
 /**
  * Time: 1/13/21
@@ -23,5 +24,11 @@ public enum BleRqError {
         this.msg = msg;
     }
 
-
+    @Override
+    public String toString() {
+        return "BleRqError{" +
+                "code=" + code +
+                ", msg=" + ContextUtils.getAppContext().getResources().getString(msg) +
+                '}';
+    }
 }

@@ -262,17 +262,16 @@ public class BleRqClient implements LifecycleObserver {
                             result.getDevice().getAddress(),
                             result.getDevice().getName());
                     isSuccess = scanCallback.isNeedConnDevice(callbackType, result);
-                    found++;
+                    if (isSuccess) found++;
                 }
                 if (isSuccess && found == 1) {
                     if (bluetoothLeScanner != null && innerScanCallback != null)
                         bluetoothLeScanner.stopScan(innerScanCallback);
-                    if (innerScanCallback != null && mHandler != null)
+                    if (innerScanCallback != null)
                         mHandler.removeCallbacks(innerScanCallback.cancelCallback);
                     innerScanCallback = null;
                     bluetoothLeScanner = null;
                     device = new ProxyDevice(result.getDevice(), logger);
-                    ;
                     deviceAddress = device.getAddress();
                     deviceName = device.getName();
                     logger.info("成功扫描到设备: name: {0}, address: {1}", deviceName, deviceAddress);
@@ -309,11 +308,12 @@ public class BleRqClient implements LifecycleObserver {
         private long scanTimeout = 15000; //扫描超时时间
         private boolean enableLog = true; //是否启用log输出
         private boolean enableLogFile = true; //是否启用输出到文件
+        private Integer logFileMaxExistDay; //日志文件最多存留天数
+        private File logFileDir;
         private int writeFailedRepeatCount = 3; //写失败之后的重试次数
         private ScanSettings scanSettings;
         private List<ScanFilter> scanFilters;
         private BleRqScanCallback scanCallback;
-        private final BleRqLogger logger;
 
         private UUID serviceUuid;
         private UUID writeChannelUuid;
@@ -339,16 +339,12 @@ public class BleRqClient implements LifecycleObserver {
 
         public BleRqClientBuilder(LifecycleOwner owner) {
             this.owner = owner;
-
             ScanSettings.Builder scanSettingsBuilder = new ScanSettings.Builder()
                     .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 scanSettingsBuilder.setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES);
             }
             scanSettings = scanSettingsBuilder.build();
-            logger = new BleRqLogger();
-            logger.setEnableConsole(enableLog);
-            logger.setEnableFile(enableLogFile);
         }
 
         /**
@@ -370,7 +366,6 @@ public class BleRqClient implements LifecycleObserver {
          */
         public BleRqClientBuilder setEnableLog(boolean enableLog) {
             this.enableLog = enableLog;
-            logger.setEnableConsole(enableLog);
             return this;
         }
 
@@ -382,7 +377,6 @@ public class BleRqClient implements LifecycleObserver {
          */
         public BleRqClientBuilder setEnableLogFile(boolean enableLogFile) {
             this.enableLogFile = enableLogFile;
-            logger.setEnableFile(enableLogFile);
             return this;
         }
 
@@ -393,7 +387,7 @@ public class BleRqClient implements LifecycleObserver {
          * @return this
          */
         public BleRqClientBuilder setLogFileDir(File logFileDir) {
-            logger.setFileDir(logFileDir);
+            this.logFileDir = logFileDir;
             return this;
         }
 
@@ -530,6 +524,17 @@ public class BleRqClient implements LifecycleObserver {
         }
 
         /**
+         * 设置日志文件最多存留天数
+         *
+         * @param logFileMaxExistDay 日志文件最多存留天数
+         * @return this
+         */
+        public BleRqClientBuilder setLogFileMaxExistDay(Integer logFileMaxExistDay) {
+            this.logFileMaxExistDay = logFileMaxExistDay;
+            return this;
+        }
+
+        /**
          * 构建 ble rq client 对象
          *
          * @return ble rq client
@@ -538,12 +543,22 @@ public class BleRqClient implements LifecycleObserver {
             if (scanCallback == null) {
                 throw new BleRqException(R.string.blerq_must_set_scan_callback);
             }
+            if (logFileDir == null) {
+                logFileDir = ContextUtils.getAppContext().getExternalFilesDir("ble_rq_logs");
+            }
+
+            //初始化日志组件
+            BleRqLogger logger = new BleRqLogger(enableLog, enableLogFile, logFileDir);
+            if (logFileMaxExistDay != null) logger.setLogFileMaxExistDay(logFileMaxExistDay);
+
+
             if (serviceUuid == null || writeChannelUuid == null || readChannelUuid == null || notifyChannelUuid == null) {
                 logger.info(R.string.blerq_must_set_all_channel);
             }
             BleRqClient manager = new BleRqClient(scanTimeout, logger, writeFailedRepeatCount,
                     serviceUuid, writeChannelUuid, readChannelUuid, notifyChannelUuid,
                     scanSettings, scanFilters, scanCallback);
+
             manager.context = ContextUtils.getAppContext();
             if (owner != null) {
                 owner.getLifecycle().addObserver(manager);
