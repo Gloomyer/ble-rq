@@ -23,9 +23,7 @@ class MainActivity : AppCompatActivity() {
             .setScanCallback(object : BleRqScanCallback {
 
                 override fun isNeedConnDevice(callbackType: Int, device: ScanResult): Boolean {
-                    val ret = ++index == 2
-                    Log.i("BLE_RQ", "ret: $ret")
-                    return ret
+                    return ++index == 2
                 }
 
                 override fun onError(error: BleRqError) {
