@@ -1,5 +1,6 @@
 package com.gloomyer.blerq.exception;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import com.gloomyer.blerq.utils.ContextUtils;
@@ -13,18 +14,20 @@ import java.lang.reflect.Field;
  */
 public class BleRqException extends RuntimeException {
 
+    private String message;
+
     public BleRqException(@StringRes int msgRes) {
-        String msg = ContextUtils.getAppContext().getResources().getString(msgRes);
-        try {
-            Field field = getClass().getDeclaredField("detailMessage");
-            field.setAccessible(true);
-            field.set(this, msg);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        message = ContextUtils.getAppContext().getResources().getString(msgRes);
     }
 
     public BleRqException(String msg) {
         super(msg);
+        this.message = message;
+    }
+
+    @Nullable
+    @Override
+    public String getMessage() {
+        return message;
     }
 }

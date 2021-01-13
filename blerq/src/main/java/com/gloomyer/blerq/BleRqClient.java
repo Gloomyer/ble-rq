@@ -34,6 +34,7 @@ import com.gloomyer.blerq.utils.PermissionUtils;
 
 import java.io.File;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Time: 1/13/21
@@ -55,11 +56,18 @@ public class BleRqClient implements LifecycleObserver {
     private BluetoothLeScanner bluetoothLeScanner;
     private InnerScanCallback innerScanCallback;
 
+    private UUID serviceUuid;
+    private UUID writeChannelUuid;
+    private UUID readChannelUuid;
+    private UUID notifyChannelUuid;
+
     private ProxyDevice device;
     private String deviceAddress;
     private String deviceName;
 
     private BleRqClient(long scanTimeout, BleRqLogger logger, int writeFailedRepeatCount,
+                        UUID serviceUuid, UUID writeChannelUuid,
+                        UUID readChannelUuid, UUID notifyChannelUuid,
                         ScanSettings scanSettings, List<ScanFilter> scanFilters, BleRqScanCallback scanCallback) {
         this.scanTimeout = scanTimeout;
         this.logger = logger;
@@ -306,6 +314,11 @@ public class BleRqClient implements LifecycleObserver {
         private BleRqScanCallback scanCallback;
         private final BleRqLogger logger;
 
+        private UUID serviceUuid;
+        private UUID writeChannelUuid;
+        private UUID readChannelUuid;
+        private UUID notifyChannelUuid;
+
         /**
          * 使用此构造方法
          * 需要自行解决权限和蓝牙开关问题 对象清理也需要自己调用
@@ -416,11 +429,119 @@ public class BleRqClient implements LifecycleObserver {
             return this;
         }
 
+        /**
+         * 设置写失败重试次数
+         *
+         * @param writeFailedRepeatCount 写失败重试次数
+         * @return this
+         */
+        public BleRqClientBuilder setWriteFailedRepeatCount(int writeFailedRepeatCount) {
+            this.writeFailedRepeatCount = writeFailedRepeatCount;
+            return this;
+        }
+
+        /**
+         * 设置服务 uuid
+         *
+         * @param serviceUuid serviceUuid
+         * @return this
+         */
+        public BleRqClientBuilder setServiceUuid(UUID serviceUuid) {
+            this.serviceUuid = serviceUuid;
+            return this;
+        }
+
+        /**
+         * 设置服务 uuid
+         *
+         * @param serviceUuid serviceUuid
+         * @return this
+         */
+        public BleRqClientBuilder setServiceUuid(String serviceUuid) {
+            this.serviceUuid = UUID.fromString(serviceUuid);
+            return this;
+        }
+
+        /**
+         * 设置 写通道 uuid
+         *
+         * @param writeChannelUuid 写通道 uuid
+         * @return this
+         */
+        public BleRqClientBuilder setWriteChannelUuid(UUID writeChannelUuid) {
+            this.writeChannelUuid = writeChannelUuid;
+            return this;
+        }
+
+        /**
+         * 设置 写通道 uuid
+         *
+         * @param writeChannelUuid 写通道 uuid
+         * @return this
+         */
+        public BleRqClientBuilder setWriteChannelUuid(String writeChannelUuid) {
+            this.writeChannelUuid = UUID.fromString(writeChannelUuid);
+            return this;
+        }
+
+        /**
+         * 设置 读通道 uuid
+         *
+         * @param readChannelUuid 读通道 uuid
+         * @return this
+         */
+        public BleRqClientBuilder setReadChannelUuid(UUID readChannelUuid) {
+            this.readChannelUuid = readChannelUuid;
+            return this;
+        }
+
+        /**
+         * 设置 读通道 uuid
+         *
+         * @param readChannelUuid 读通道 uuid
+         * @return this
+         */
+        public BleRqClientBuilder setReadChannelUuid(String readChannelUuid) {
+            this.readChannelUuid = UUID.fromString(readChannelUuid);
+            return this;
+        }
+
+        /**
+         * 设置 通知通道 uuid
+         *
+         * @param notifyChannelUuid 通知通道 uuid
+         * @return this
+         */
+        public BleRqClientBuilder setNotifyChannelUuid(UUID notifyChannelUuid) {
+            this.notifyChannelUuid = notifyChannelUuid;
+            return this;
+        }
+
+        /**
+         * 设置 通知通道 uuid
+         *
+         * @param notifyChannelUuid 通知通道 uuid
+         * @return this
+         */
+        public BleRqClientBuilder setNotifyChannelUuid(String notifyChannelUuid) {
+            this.notifyChannelUuid = UUID.fromString(notifyChannelUuid);
+            return this;
+        }
+
+        /**
+         * 构建 ble rq client 对象
+         *
+         * @return ble rq client
+         */
         public BleRqClient build() {
             if (scanCallback == null) {
                 throw new BleRqException(R.string.blerq_must_set_scan_callback);
             }
+            if (serviceUuid == null || writeChannelUuid == null || readChannelUuid == null || notifyChannelUuid == null) {
+                throw new BleRqException(R.string.blerq_must_set_all_channel);
+            }
             BleRqClient manager = new BleRqClient(scanTimeout, logger, writeFailedRepeatCount,
+                    serviceUuid, writeChannelUuid, readChannelUuid, notifyChannelUuid,
                     scanSettings, scanFilters, scanCallback);
             manager.context = ContextUtils.getAppContext();
             if (owner != null) {
