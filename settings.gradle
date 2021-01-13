@@ -1,0 +1,3 @@
+include ':blerq'
+include ':app'
+rootProject.name = "ble_rq"
