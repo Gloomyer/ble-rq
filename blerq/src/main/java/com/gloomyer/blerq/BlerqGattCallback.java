@@ -4,8 +4,11 @@ import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
+import android.bluetooth.BluetoothGattService;
 
 import com.gloomyer.blerq.log.BleRqLogger;
+
+import java.util.List;
 
 /**
  * Time: 1/13/21
@@ -35,6 +38,11 @@ class BlerqGattCallback extends BluetoothGattCallback {
     public void onServicesDiscovered(BluetoothGatt gatt, int status) {
         super.onServicesDiscovered(gatt, status);
         logger.info("onServicesDiscovered status: {0}", status);
+        List<BluetoothGattService> services = gatt.getServices();
+        logger.info("onServicesDiscovered gatt services size : {0}", services.size());
+        for (BluetoothGattService gattService : services) {
+            logger.info("found onServicesDiscovered gattService: {0}", gattService.getUuid());
+        }
 
     }
 }

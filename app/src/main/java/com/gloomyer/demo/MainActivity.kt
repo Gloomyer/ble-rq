@@ -20,7 +20,7 @@ class MainActivity : AppCompatActivity() {
             .setScanTimeout(15000)
             .setScanCallback(object : BleRqScanCallback {
                 override fun isNeedConnDevice(callbackType: Int, device: ScanResult): Boolean {
-                    return true;
+                    return "62:26:01:40:17:41".equals(device.device.address, false);
                 }
 
                 override fun onError(error: BleRqError) {

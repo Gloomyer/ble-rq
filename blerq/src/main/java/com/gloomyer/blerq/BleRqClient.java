@@ -209,6 +209,7 @@ public class BleRqClient implements LifecycleObserver {
      * 第5步 开始连接设备
      */
     private void connectDevice() {
+        logger.info("connect device..");
         this.device.connect(context);
     }
 
@@ -538,7 +539,7 @@ public class BleRqClient implements LifecycleObserver {
                 throw new BleRqException(R.string.blerq_must_set_scan_callback);
             }
             if (serviceUuid == null || writeChannelUuid == null || readChannelUuid == null || notifyChannelUuid == null) {
-                throw new BleRqException(R.string.blerq_must_set_all_channel);
+                logger.info(R.string.blerq_must_set_all_channel);
             }
             BleRqClient manager = new BleRqClient(scanTimeout, logger, writeFailedRepeatCount,
                     serviceUuid, writeChannelUuid, readChannelUuid, notifyChannelUuid,

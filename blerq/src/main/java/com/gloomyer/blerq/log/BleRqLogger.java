@@ -2,6 +2,10 @@ package com.gloomyer.blerq.log;
 
 import android.util.Log;
 
+import androidx.annotation.StringRes;
+
+import com.gloomyer.blerq.utils.ContextUtils;
+
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -42,6 +46,13 @@ public class BleRqLogger {
         } else {
             message = MessageFormat.format(msg, args);
         }
+        if (enableConsole) {
+            Log.i(tag, message);
+        }
+    }
+
+    public void info(@StringRes int msg) {
+        String message = ContextUtils.getAppContext().getResources().getString(msg);
         if (enableConsole) {
             Log.i(tag, message);
         }
