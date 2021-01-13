@@ -34,9 +34,9 @@ class ProxyDevice {
         return device.getName();
     }
 
-    public void connect(Context context, long connTimeout, BleRqScanCallback scanCallback,
+    public void connect(BleRqClient bleRqClient, Context context, long connTimeout, BleRqScanCallback scanCallback,
                         UUID serviceUuid, UUID writeChannelUuid, UUID readChannelUuid, UUID notifyChannelUuid) {
-        blerqGattCallback = new BlerqGattCallback(logger, connTimeout, scanCallback,
+        blerqGattCallback = new BlerqGattCallback(bleRqClient, logger, connTimeout, scanCallback,
                 serviceUuid, writeChannelUuid, readChannelUuid, notifyChannelUuid);
         bluetoothGatt = device.connectGatt(context, true, blerqGattCallback);
     }

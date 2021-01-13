@@ -24,6 +24,7 @@ import java.util.UUID;
  */
 class BlerqGattCallback extends BluetoothGattCallback {
 
+    private final BleRqClient bleRqClient;
     private final BleRqLogger logger;
     private final long connTimeout;
     private final Handler mHandler;
@@ -36,8 +37,9 @@ class BlerqGattCallback extends BluetoothGattCallback {
     private BleRqScanCallback scanCallback;
     private BluetoothGatt bluetoothGatt;
 
-    public BlerqGattCallback(BleRqLogger logger, long connTimeout, BleRqScanCallback scanCallback,
+    public BlerqGattCallback(BleRqClient bleRqClient, BleRqLogger logger, long connTimeout, BleRqScanCallback scanCallback,
                              UUID serviceUuid, UUID writeChannelUuid, UUID readChannelUuid, UUID notifyChannelUuid) {
+        this.bleRqClient = bleRqClient;
         this.logger = logger;
         this.connTimeout = connTimeout;
         this.scanCallback = scanCallback;
@@ -115,7 +117,16 @@ class BlerqGattCallback extends BluetoothGattCallback {
             }
         }
 
-
+        //到了这一步就可以认为连接完成了
+        //但是常见情况 这里虽然完成但是立马发送数据会失败,所以做一个延时
+        //这种特殊情况 只要不停的重复连接一个设备非常容易触发
+        //这里非主线程直接暂停就好了
+        try {
+            Thread.sleep(1500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        if (scanCallback != null) scanCallback.onSuccess(bleRqClient);
     }
 
     /**
