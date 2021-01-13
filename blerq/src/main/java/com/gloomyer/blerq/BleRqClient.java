@@ -44,6 +44,7 @@ import java.util.UUID;
 public class BleRqClient implements LifecycleObserver {
 
     private final long scanTimeout; //扫描超时时间
+    private final long connTimeout; //连接超时时间
     private final ScanSettings scanSettings;
     private final List<ScanFilter> scanFilters; //扫描过滤
     private final int writeFailedRepeatCount; //写失败的时候重试次数
@@ -65,11 +66,12 @@ public class BleRqClient implements LifecycleObserver {
     private String deviceAddress;
     private String deviceName;
 
-    private BleRqClient(long scanTimeout, BleRqLogger logger, int writeFailedRepeatCount,
+    private BleRqClient(long scanTimeout, long connTimeout, BleRqLogger logger, int writeFailedRepeatCount,
                         UUID serviceUuid, UUID writeChannelUuid,
                         UUID readChannelUuid, UUID notifyChannelUuid,
                         ScanSettings scanSettings, List<ScanFilter> scanFilters, BleRqScanCallback scanCallback) {
         this.scanTimeout = scanTimeout;
+        this.connTimeout = connTimeout;
         this.logger = logger;
         this.writeFailedRepeatCount = writeFailedRepeatCount;
         this.scanSettings = scanSettings;
@@ -209,8 +211,9 @@ public class BleRqClient implements LifecycleObserver {
      * 第5步 开始连接设备
      */
     private void connectDevice() {
+        logger.setDeviceAddress(deviceAddress);
         logger.info("connect device..");
-        this.device.connect(context);
+        this.device.connect(context, connTimeout, scanCallback);
     }
 
 
@@ -258,19 +261,23 @@ public class BleRqClient implements LifecycleObserver {
             if (scanCallback != null) {
                 boolean isSuccess;
                 synchronized (this) {
-                    logger.info("onScanResult: address: {0}, name: {1}",
-                            result.getDevice().getAddress(),
-                            result.getDevice().getName());
-                    isSuccess = scanCallback.isNeedConnDevice(callbackType, result);
-                    if (isSuccess) found++;
+                    if (found == 0) {
+                        logger.info("onScanResult: address: {0}, name: {1}",
+                                result.getDevice().getAddress(),
+                                result.getDevice().getName());
+                        isSuccess = scanCallback.isNeedConnDevice(callbackType, result);
+                        if (isSuccess) found++;
+                    } else {
+                        isSuccess = false;
+                    }
                 }
                 if (isSuccess && found == 1) {
-                    if (bluetoothLeScanner != null && innerScanCallback != null)
-                        bluetoothLeScanner.stopScan(innerScanCallback);
+                    if (bluetoothLeScanner != null) bluetoothLeScanner.stopScan(this);
                     if (innerScanCallback != null)
                         mHandler.removeCallbacks(innerScanCallback.cancelCallback);
                     innerScanCallback = null;
                     bluetoothLeScanner = null;
+
                     device = new ProxyDevice(result.getDevice(), logger);
                     deviceAddress = device.getAddress();
                     deviceName = device.getName();
@@ -306,6 +313,7 @@ public class BleRqClient implements LifecycleObserver {
     public static class BleRqClientBuilder {
         private final LifecycleOwner owner;
         private long scanTimeout = 15000; //扫描超时时间
+        private long connTimeout = 5000; //扫描超时时间
         private boolean enableLog = true; //是否启用log输出
         private boolean enableLogFile = true; //是否启用输出到文件
         private Integer logFileMaxExistDay; //日志文件最多存留天数
@@ -355,6 +363,17 @@ public class BleRqClient implements LifecycleObserver {
          */
         public BleRqClientBuilder setScanTimeout(long scanTimeout) {
             this.scanTimeout = scanTimeout;
+            return this;
+        }
+
+        /**
+         * 设置连接超时时间
+         *
+         * @param connTimeout connTimeout
+         * @return this
+         */
+        public BleRqClientBuilder setConnTimeout(long connTimeout) {
+            this.connTimeout = connTimeout;
             return this;
         }
 
@@ -555,7 +574,8 @@ public class BleRqClient implements LifecycleObserver {
             if (serviceUuid == null || writeChannelUuid == null || readChannelUuid == null || notifyChannelUuid == null) {
                 logger.info(R.string.blerq_must_set_all_channel);
             }
-            BleRqClient manager = new BleRqClient(scanTimeout, logger, writeFailedRepeatCount,
+            BleRqClient manager = new BleRqClient(scanTimeout, connTimeout,
+                    logger, writeFailedRepeatCount,
                     serviceUuid, writeChannelUuid, readChannelUuid, notifyChannelUuid,
                     scanSettings, scanFilters, scanCallback);
 

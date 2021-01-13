@@ -11,4 +11,5 @@
     <string name="blerq_just_call_once_start">rqclient只能调用一次start方法</string>
     <string name="blerq_device_scan_timeout">蓝牙设备扫描超时</string>
     <string name="blerq_must_set_all_channel">你没有 服务/写/读/通知 uuid 将尝试自动感知</string>
+    <string name="blerq_device_connect_timeout">蓝牙设备连接超时</string>
 </resources>

@@ -13,7 +13,8 @@ public enum BleRqError {
     DEVICE_NOT_SUPPORT(0xF0, R.string.blerq_device_not_support),
     DEVICE_NO_PERMISSION(0xF1, R.string.blerq_device_no_permission),
     DEVICE_BLUETOOTH_NOT_OPEN(0xF2, R.string.blerq_device_not_open),
-    DEVICE_SCAN_TIMEOUT(0xF3, R.string.blerq_device_scan_timeout);
+    DEVICE_SCAN_TIMEOUT(0xF3, R.string.blerq_device_scan_timeout),
+    DEVICE_CONNECT_TIMEOUT(0xF4, R.string.blerq_device_connect_timeout);
 
 
     public final int code;

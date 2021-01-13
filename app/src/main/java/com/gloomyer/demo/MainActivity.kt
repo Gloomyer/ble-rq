@@ -19,18 +19,19 @@ class MainActivity : AppCompatActivity() {
         BleRqClient.newBuilder(this)
             .setEnableLog(true)
             .setEnableLogFile(true)
-            .setScanTimeout(5000)
+            .setLogFileMaxExistDay(5)
+            .setScanTimeout(10000)
             .setScanCallback(object : BleRqScanCallback {
 
                 override fun isNeedConnDevice(callbackType: Int, device: ScanResult): Boolean {
-                    return ++index == 2
+                    return "10:84:DE:E6:06:41".equals(device.device.address, true)
                 }
 
                 override fun onError(error: BleRqError) {
-
                 }
 
-                override fun onSuccess() {
+                override fun onSuccess(client: BleRqClient) {
+
                 }
 
             }).build().start()

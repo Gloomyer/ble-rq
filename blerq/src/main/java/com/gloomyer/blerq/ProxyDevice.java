@@ -4,6 +4,7 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.content.Context;
 
+import com.gloomyer.blerq.callback.BleRqScanCallback;
 import com.gloomyer.blerq.log.BleRqLogger;
 
 /**
@@ -15,8 +16,8 @@ class ProxyDevice {
     private final BluetoothDevice device;
     private final BleRqLogger logger;
 
-    private Context context;
     private BluetoothGatt bluetoothGatt;
+    private BlerqGattCallback blerqGattCallback;
 
     ProxyDevice(BluetoothDevice device, BleRqLogger logger) {
         this.device = device;
@@ -31,15 +32,14 @@ class ProxyDevice {
         return device.getName();
     }
 
-    public void connect(Context context) {
-        this.context = context;
-        BlerqGattCallback blerqGattCallback = new BlerqGattCallback(logger);
+    public void connect(Context context, long connTimeout, BleRqScanCallback scanCallback) {
+        blerqGattCallback = new BlerqGattCallback(logger, connTimeout, scanCallback);
         bluetoothGatt = device.connectGatt(context, true, blerqGattCallback);
-        logger.setDeviceAddress(device.getAddress());
     }
 
     public void close() {
-        context = null;
+        if (blerqGattCallback != null) blerqGattCallback.close();
+        blerqGattCallback = null;
         if (bluetoothGatt != null) {
             try {
                 bluetoothGatt.close();
