@@ -3,8 +3,6 @@ package com.gloomyer.blerq;
 import android.Manifest;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
@@ -44,24 +42,22 @@ import java.util.List;
  */
 public class BleRqClient implements LifecycleObserver {
 
-    private long scanTimeout; //扫描超时时间
-    private ScanSettings scanSettings;
-    private List<ScanFilter> scanFilters;
-    private int writeFailedRepeatCount;
-    private BleRqLogger logger;
+    private final long scanTimeout; //扫描超时时间
+    private final ScanSettings scanSettings;
+    private final List<ScanFilter> scanFilters; //扫描过滤
+    private final int writeFailedRepeatCount; //写失败的时候重试次数
+    private final Handler mHandler;
+    private final BleRqLogger logger;
     private BleRqScanCallback scanCallback;
     private Context context;
     private BluetoothAdapter bmAdapter;
     private FragmentManager fm; //fragment manager 用于申请权限
-    private Handler mHandler;
     private BluetoothLeScanner bluetoothLeScanner;
     private InnerScanCallback innerScanCallback;
 
-    private BluetoothDevice device;
+    private ProxyDevice device;
     private String deviceAddress;
     private String deviceName;
-    private BluetoothGatt bluetoothGatt;
-
 
     private BleRqClient(long scanTimeout, BleRqLogger logger, int writeFailedRepeatCount,
                         ScanSettings scanSettings, List<ScanFilter> scanFilters, BleRqScanCallback scanCallback) {
@@ -205,10 +201,7 @@ public class BleRqClient implements LifecycleObserver {
      * 第5步 开始连接设备
      */
     private void connectDevice() {
-        BluetoothDevice device = this.device;
-        if (device != null) {
-            bluetoothGatt = device.connectGatt(context, true, new BlerqGattCallback(logger));
-        }
+        this.device.connect(context);
     }
 
 
@@ -230,16 +223,8 @@ public class BleRqClient implements LifecycleObserver {
         bluetoothLeScanner = null;
         scanCallback = null;
         bmAdapter = null;
+        if (device != null) device.close();
         device = null;
-        if (bluetoothGatt != null) {
-            try {
-                bluetoothGatt.close();
-            } catch (Exception e) {
-                logger.info(e);
-            }
-        }
-        bluetoothGatt = null;
-        logger = null;
     }
 
     private class InnerScanCallback extends ScanCallback {
@@ -277,7 +262,8 @@ public class BleRqClient implements LifecycleObserver {
                         mHandler.removeCallbacks(innerScanCallback.cancelCallback);
                     innerScanCallback = null;
                     bluetoothLeScanner = null;
-                    device = result.getDevice();
+                    device = new ProxyDevice(result.getDevice(), logger);
+                    ;
                     deviceAddress = device.getAddress();
                     deviceName = device.getName();
                     logger.info("成功扫描到设备: name: {0}, address: {1}", deviceName, deviceAddress);
