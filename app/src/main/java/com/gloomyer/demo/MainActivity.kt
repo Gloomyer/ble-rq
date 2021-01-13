@@ -19,7 +19,7 @@ class MainActivity : AppCompatActivity() {
             .setEnableLogFile(true)
             .setScanTimeout(15000)
             .setScanCallback(object : BleRqScanCallback {
-                override fun isNeedConnDevice(device: ScanResult): Boolean {
+                override fun isNeedConnDevice(callbackType: Int, device: ScanResult): Boolean {
                     return true;
                 }
 

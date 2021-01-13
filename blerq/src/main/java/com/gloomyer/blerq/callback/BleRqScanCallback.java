@@ -15,10 +15,11 @@ public interface BleRqScanCallback {
     /**
      * 判断当前设备是否是要连接的那个
      *
+     * @param callbackType callbackType
      * @param device 设备
      * @return 返回true表示就是这个设备 false表示不是
      */
-    boolean isNeedConnDevice(@NonNull ScanResult device);
+    boolean isNeedConnDevice(int callbackType, @NonNull ScanResult device);
 
     /**
      * 当连接发生了错误

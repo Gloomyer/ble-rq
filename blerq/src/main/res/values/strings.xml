@@ -8,4 +8,6 @@
     <string name="blerq_device_no_permission">没有蓝牙操作权限</string>
     <string name="blerq_permissions_must_greater_0">要申请的权限数量必须大于0个</string>
     <string name="blerq_device_not_open">蓝牙未打开</string>
+    <string name="blerq_just_call_once_start">rqclient只能调用一次start方法</string>
+    <string name="blerq_device_scan_timeout">蓝牙设备扫描超时</string>
 </resources>

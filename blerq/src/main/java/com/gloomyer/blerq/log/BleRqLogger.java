@@ -3,6 +3,9 @@ package com.gloomyer.blerq.log;
 import android.util.Log;
 
 import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.text.MessageFormat;
 
 /**
@@ -43,4 +46,39 @@ public class BleRqLogger {
             Log.i(tag, message);
         }
     }
+
+    public void info(Exception e) {
+        String message = getStackTraceInfo(e);
+        if (enableConsole) {
+            Log.i(tag, message);
+        }
+    }
+
+
+    public void close() {
+
+    }
+
+    /**
+     * 获取错误的信息
+     *
+     * @param throwable throwable
+     * @return throwable
+     */
+    private String getStackTraceInfo(final Throwable throwable) {
+        PrintWriter pw = null;
+        Writer writer = new StringWriter();
+        try {
+            pw = new PrintWriter(writer);
+            throwable.printStackTrace(pw);
+        } catch (Exception e) {
+            return "";
+        } finally {
+            if (pw != null) {
+                pw.close();
+            }
+        }
+        return writer.toString();
+    }
+
 }
