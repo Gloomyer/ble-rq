@@ -128,6 +128,7 @@ class BlerqGattCallback extends BluetoothGattCallback {
             e.printStackTrace();
         }
         if (scanCallback != null) scanCallback.onSuccess(bleRqClient);
+        scanCallback = null;//到这一步了  scanCallback 也没用了 可以释放掉了
     }
 
     /**
