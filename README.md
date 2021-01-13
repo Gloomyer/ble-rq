@@ -14,11 +14,13 @@ ble 通讯有3个channel 读/写/通知 (write/read/notify)
 ## feature(功能)
 
 目前支持的场景
+
 > write/notify  写/通知 响应模型
 > write/read    写/读   响应模型
 > write/custom  写/自定义数据结构 蓝牙实际不返回数据 响应模型
 > just read     只是读 响应模型
 > notify observer  没有产生写的情况下通知监听者
+
 ## License(协议)
 
 MIT License
