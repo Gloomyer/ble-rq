@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="blerq_device_not_found">设备未找到</string>
+    <string name="blerq_device_connection_failed">设备连接失败</string>
+</resources>
