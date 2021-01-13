@@ -24,7 +24,7 @@ import java.util.UUID;
  */
 class BlerqGattCallback extends BluetoothGattCallback {
 
-    private final BleRqClient bleRqClient;
+    private BleRqClient bleRqClient;
     private final BleRqLogger logger;
     private final long connTimeout;
     private final Handler mHandler;
@@ -66,6 +66,7 @@ class BlerqGattCallback extends BluetoothGattCallback {
     public void close() {
         scanCallback = null;
         bluetoothGatt = null;
+        bleRqClient = null;
     }
 
     @Override
