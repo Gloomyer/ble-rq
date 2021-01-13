@@ -213,7 +213,8 @@ public class BleRqClient implements LifecycleObserver {
     private void connectDevice() {
         logger.setDeviceAddress(deviceAddress);
         logger.info("connect device..");
-        this.device.connect(context, connTimeout, scanCallback);
+        this.device.connect(context, connTimeout, scanCallback,
+                serviceUuid, writeChannelUuid, readChannelUuid, notifyChannelUuid);
     }
 
 

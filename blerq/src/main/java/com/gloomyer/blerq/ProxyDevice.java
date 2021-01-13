@@ -7,6 +7,8 @@ import android.content.Context;
 import com.gloomyer.blerq.callback.BleRqScanCallback;
 import com.gloomyer.blerq.log.BleRqLogger;
 
+import java.util.UUID;
+
 /**
  * Time: 1/13/21
  * Author: Gloomy
@@ -32,8 +34,10 @@ class ProxyDevice {
         return device.getName();
     }
 
-    public void connect(Context context, long connTimeout, BleRqScanCallback scanCallback) {
-        blerqGattCallback = new BlerqGattCallback(logger, connTimeout, scanCallback);
+    public void connect(Context context, long connTimeout, BleRqScanCallback scanCallback,
+                        UUID serviceUuid, UUID writeChannelUuid, UUID readChannelUuid, UUID notifyChannelUuid) {
+        blerqGattCallback = new BlerqGattCallback(logger, connTimeout, scanCallback,
+                serviceUuid, writeChannelUuid, readChannelUuid, notifyChannelUuid);
         bluetoothGatt = device.connectGatt(context, true, blerqGattCallback);
     }
 
