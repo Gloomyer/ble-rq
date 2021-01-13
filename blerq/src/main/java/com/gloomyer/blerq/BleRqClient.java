@@ -133,7 +133,7 @@ public class BleRqClient implements LifecycleObserver {
 
         logger.info("checkPermission: " +
                         "BLUETOOTH_ADMIN: {0}, BLUETOOTH: {1}, " +
-                        "ACCESS_COARSE_LOCATION: {2}, ACCESS_FINE_LOCATION: {3}" +
+                        "ACCESS_COARSE_LOCATION: {2}, ACCESS_FINE_LOCATION: {3}, " +
                         "hasPermission: {4}",
                 p1, p2, p3, p4, hasPermission);
 
