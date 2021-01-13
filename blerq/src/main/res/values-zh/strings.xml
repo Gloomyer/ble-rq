@@ -2,4 +2,7 @@
 <resources>
     <string name="blerq_device_not_found">设备未找到</string>
     <string name="blerq_device_connection_failed">设备连接失败</string>
+    <string name="blerq_device_not_support">当前设备不支持ble蓝牙</string>
+    <string name="blerq_not_normal_owner">BleRqManager需要一个正常的owner</string>
+    <string name="blerq_must_set_scan_callback">必须设置蓝牙扫描回调</string>
 </resources>
