@@ -12,6 +12,7 @@ import com.gloomyer.blerq.callback.BleRqScanCallback;
 import com.gloomyer.blerq.code.BleRqError;
 import com.gloomyer.blerq.guess.NotifyCharacteristicsGuess;
 import com.gloomyer.blerq.guess.ServicesGuess;
+import com.gloomyer.blerq.guess.WriteCharacteristicsGuess;
 import com.gloomyer.blerq.log.BleRqLogger;
 
 import java.util.List;
@@ -145,6 +146,14 @@ class BlerqGattCallback extends BluetoothGattCallback {
             } else {
                 if (NotifyCharacteristicsGuess.instance().guess(gatt.getDevice().getAddress(), characteristic)) {
                     configCharacteristicNotification(gatt, characteristic);
+                }
+            }
+
+            if (writeChannelUuid != null && writeChannelUuid.equals(characteristic.getUuid())) {
+                bleRqClient.writeCharacteristic = characteristic;
+            } else {
+                if (WriteCharacteristicsGuess.instance().guess(gatt.getDevice().getAddress(), characteristic)) {
+                    bleRqClient.writeCharacteristic = characteristic;
                 }
             }
         }

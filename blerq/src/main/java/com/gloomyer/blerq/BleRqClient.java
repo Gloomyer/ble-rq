@@ -3,6 +3,7 @@ package com.gloomyer.blerq;
 import android.Manifest;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
@@ -65,6 +66,10 @@ public class BleRqClient implements LifecycleObserver {
     private ProxyDevice device;
     private String deviceAddress;
     private String deviceName;
+
+
+    BluetoothGattCharacteristic writeCharacteristic;//用于写数据的writeCharacteristic
+
 
     private BleRqClient(long scanTimeout, long connTimeout, BleRqLogger logger, int writeFailedRepeatCount,
                         UUID serviceUuid, UUID writeChannelUuid,
