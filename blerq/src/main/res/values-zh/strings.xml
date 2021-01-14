@@ -13,4 +13,5 @@
     <string name="blerq_must_set_all_channel">你没有 服务/写/读/通知 uuid 将尝试自动感知</string>
     <string name="blerq_device_connect_timeout">蓝牙设备连接超时</string>
     <string name="blerq_not_found_services">没找到蓝牙services</string>
+    <string name="blerq_unsuccess_not_get_api">尚未连接成功，无法获取接口对象.</string>
 </resources>

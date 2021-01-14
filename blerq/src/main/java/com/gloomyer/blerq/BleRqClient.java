@@ -34,7 +34,9 @@ import com.gloomyer.blerq.utils.ContextUtils;
 import com.gloomyer.blerq.utils.PermissionUtils;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -69,7 +71,7 @@ public class BleRqClient implements LifecycleObserver {
 
 
     BluetoothGattCharacteristic writeCharacteristic;//用于写数据的writeCharacteristic
-
+    boolean isFirstSuccess; //标示第一次成功连接了 可以通过开始获取接口代理对象了
 
     private BleRqClient(long scanTimeout, long connTimeout, BleRqLogger logger, int writeFailedRepeatCount,
                         UUID serviceUuid, UUID writeChannelUuid,
@@ -220,6 +222,37 @@ public class BleRqClient implements LifecycleObserver {
         logger.info("connect device..");
         this.device.connect(this, context, connTimeout, scanCallback,
                 serviceUuid, writeChannelUuid, readChannelUuid, notifyChannelUuid);
+    }
+
+    private final Map<Class<?>, Object> apiCache = new HashMap<>();
+
+    public void clearApiCache() {
+        apiCache.clear();
+    }
+
+    /**
+     * 获取接口代理对象
+     *
+     * @param clazz 要获取对象的接口
+     * @param <T>   对象类型
+     * @return 实例化的对象
+     */
+    public <T> T getApi(Class<T> clazz) {
+        if (!isFirstSuccess) {
+            throw new BleRqException(R.string.blerq_unsuccess_not_get_api);
+        }
+        Object api = apiCache.get(clazz);
+        if (api == null) {
+            synchronized (this) {
+                //noinspection ConstantConditions
+                if (api == null) {
+                    api = ApiProxyHelper.getApi(clazz);
+                    apiCache.put(clazz, api);
+                }
+            }
+        }
+        //noinspection unchecked
+        return (T) api;//ApiProxyHelper.getApi(clazz);
     }
 
 

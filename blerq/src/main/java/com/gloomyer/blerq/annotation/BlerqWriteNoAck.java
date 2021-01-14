@@ -7,14 +7,13 @@ import java.lang.annotation.Target;
 import static java.lang.annotation.ElementType.METHOD;
 
 /**
- * Time: 1/13/21
+ * Time: 1/14/21
  * Author: Gloomy
- * Description: [写<->通知] 获取数据模型
+ * Description:
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({METHOD})
-public @interface BlerqWriteNotify {
-
+public @interface BlerqWriteNoAck {
     /**
      * 要发送的数据
      *
@@ -22,4 +21,10 @@ public @interface BlerqWriteNotify {
      */
     byte[] sendData() default {};
 
+    /**
+     * 自定义返回结果
+     *
+     * @return 自定义返回结果
+     */
+    byte[] replyData() default {0x00};
 }
